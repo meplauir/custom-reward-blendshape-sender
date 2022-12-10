@@ -1,1 +1,1 @@
-{"osc":{"ip":"0.0.0.0","port":39540,"interval":500},"twitch":{"auto_connect":true}}
+{"osc":{"ip":"0.0.0.0","port":39540,"interval":500},"twitch":{"auto_connect":false}}
