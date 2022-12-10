@@ -4,6 +4,7 @@ const fs = require('fs');
 const stateKeeper = require('electron-window-state')
 
 let win;
+const is_development = false;
 
 app.whenReady().then(() => {
 
@@ -26,10 +27,12 @@ app.whenReady().then(() => {
     })
     
     win.loadFile('index.html')
-    //win.setMenu(null)
-
-    win.webContents.openDevTools()
-
+    
+    if (is_development) {
+      win.webContents.openDevTools()
+    } else {
+      win.setMenu(null)
+    }
     windowState.manage(win)
   }
 
