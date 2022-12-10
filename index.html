@@ -1,0 +1,204 @@
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8">
+    <title>カスタム報酬でBlendShapeを送るやつ</title>
+    <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
+      <!-- Font Awesome -->
+    <link type="text/css" rel="stylesheet" href="./libs/font-awesome@6.0.0/css/all.min.css" />
+    <!-- Vue+Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="./libs/bootstrap@4.6.1/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="./libs/bootstrap-vue@2.19.0/bootstrap-vue.min.css" />
+    <script src="./libs/vue@2.6.14/vue.min.js"></script>
+    <script src="./libs/babel-polyfill@7.4.4/polyfill.min.js"></script>
+    <script src="./libs/bootstrap-vue@2.19.0/bootstrap-vue.min.js"></script>
+    <script src="./libs/axios@0.25.0/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"></script>
+    <!-- Design -->
+    <link href="./css/design.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <b-alert id="alert" v-model="alert.show" show fade :variant="alert.variant" dismissible>
+        {{alert.text}}
+      </b-alert>
+      <b-alert variant="success" alert.show>{</b-alert>
+      <div>
+        <b-navbar type="dark" variant="dark" class="p-0">
+          <b-navbar-nav>
+            <b-nav-item :active="menu == 1" @click="menu = 1">CustomReward</b-nav-item>
+            <b-nav-item :active="menu == 99" @click="menu = 99">Config</b-nav-item>
+          </b-navbar-nav>
+          <b-navbar-nav class="ml-auto">
+            <b-nav-item right>
+              {{twitch_config.user.login}}
+              <img :src="twitch_config.user.icon" width="30" class="ml-1" style="border-radius: 50%;" />
+            </b-nav-item>
+          </b-navbar-nav>
+        </b-navbar>
+      </div>
+      <main>
+        <div v-if="menu == 1">
+          <b-form>
+            <b-row>
+              <b-col cols="8">
+                <h4>カスタム報酬 変換設定</h4>
+              </b-col>
+              <b-col cols="4" @click="saveRewards" class="text-right">
+                <b-button variant="success">
+                  <i class="fas fa-save cursor-pointer mr-2"></i>変更を保存
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row class="mt-2">
+              <b-col cols="6">
+                <b-button variant="danger" @click="resetCustomRewards">
+                  <i class="fas fa-reply cursor-pointer mr-2"></i>変更前に戻す
+                </b-button>
+              </b-col>
+              <b-col cols="6" class="text-right">
+                <b-button variant="primary" @click="getCustomRewards">
+                  <i class="fas fa-cloud-download-alt cursor-pointer mr-2"></i>カスタム報酬を同期
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row class="mt-2">
+              <b-col cols="12">
+                <b-list-group>
+                  <b-list-group-item v-for="r in rewards_edit" >
+                    <b-row>
+                      <b-col cols="9" class="d-flex align-items-center">
+                        <b-form-checkbox v-model="r.config.is_enabled" switch>
+                          <span :style="'padding: 3px 2px; background-color:' + r.background_color" class="rounded border mx-2"><img :src="r.image" width="20" /></span>
+                          {{r.title}}
+                        </b-form-checkbox>
+                      </b-col>
+                      <b-col cols="3" class="text-right">
+                        <b-button variant="info" @click="r.config.accordion = !r.config.accordion">
+                          <i class="fas fa-angle-up cursor-pointer" v-if="r.config.accordion"></i>
+                          <i class="fas fa-angle-down cursor-pointer" v-else></i>
+                        </b-button>
+                      </b-col>
+
+                      <b-col cols="12" v-if="r.config.accordion" class="blendshape-edit small border-top mt-3 py-2">
+                        <b-row>
+                          <b-col cols="3" class="d-flex align-items-center font-weight-bold">
+                            持続時間(秒)
+                          </b-col>
+                          <b-col cols="3" class="d-flex align-items-center">
+                            <b-form-input size="sm" v-model="r.config.duration" placeholder="1000"></b-form-input>
+                          </b-col>
+                        </b-row>
+                        <b-row class="pt-3 border-top my-2">
+                          <b-col cols="5" class="d-flex align-items-center pr-1 font-weight-bold" v-html="r.config.blendshapes.length > 0 ? 'blendshape' : ''">
+                          </b-col>
+                          <b-col cols="5" class="d-flex align-items-center px-1 font-weight-bold" v-html="r.config.blendshapes.length > 0 ? 'value' : ''">
+                          </b-col>
+                          <b-col cols="2" class="d-flex align-items-center justify-content-end pl-1">
+                            <b-button variant="secondary" size="sm" @click="addBlendShape(r.config)">
+                              <small>追加</small>
+                            </b-button>
+                          </b-col>
+                        </b-row>
+                        <b-row v-for="c in r.config.blendshapes" class="mt-1">
+                          <b-col cols="5" class="d-flex align-items-center pr-1">
+                            <b-form-input size="sm" v-model="c.name" placeholder="Joy"></b-form-input>
+                          </b-col>
+                          <b-col cols="4" class="d-flex align-items-center px-1">
+                            <b-form-input v-model="c.value" size="sm" type="range" min="0" max="1" step="0.01"></b-form-input>
+                          </b-col>
+                          <b-col cols="2" class="d-flex align-items-center px-1">
+                            <b-form-input size="sm" v-model="c.value" placeholder="0"></b-form-input>
+                          </b-col>
+                          <b-col cols="1" class="d-flex align-items-center justify-content-end lead text-danger pl-1">
+                            <i class="fa fa-trash cursor-pointer" @click="deleteBlendShape(c.id, r.config)"></i>
+                          </b-col>
+                        </b-row>
+                      </b-col>
+                    </b-row>
+                  </b-list-group-item>
+                </b-list-group>
+              </b-col>
+            </b-row>
+          </b-form>
+        </div>
+        <div v-if="menu == 99">
+          <b-form>
+            <b-row>
+              <b-col cols="8">
+                <h4>BlendShape送信設定</h4>
+              </b-col>
+              <b-col cols="4" @click="saveConfig" class="text-right">
+                <b-button variant="success"><i class="fas fa-save cursor-pointer mr-1"></i> 変更を保存</b-button>
+              </b-col>
+            </b-row>
+            <b-row class="mt-1">
+              <b-col cols="3" class="d-flex align-items-center">
+                IPアドレス
+              </b-col>
+              <b-col cols="6">
+                <b-form-input size="sm" v-model="config_edit.osc.ip" placeholder="0.0.0.0"></b-form-input>
+              </b-col>
+            </b-row>
+            <b-row class="mt-1">
+              <b-col cols="3" class="d-flex align-items-center">
+                ポート番号
+              </b-col>
+              <b-col cols="2">
+                <b-form-input size="sm" v-model="config_edit.osc.port" placeholder="39540"></b-form-input>
+              </b-col>
+            </b-row>
+            <b-row class="mt-1">
+              <b-col cols="3" class="d-flex align-items-center">
+                送信間隔(ms)
+              </b-col>
+              <b-col cols="2">
+                <b-form-input size="sm" v-model="config_edit.osc.interval" placeholder="1000"></b-form-input>
+              </b-col>
+            </b-row>
+            <b-row class="mt-2">
+              <b-col cols="8">
+                <h4>Twitch設定</h4>
+              </b-col>
+            </b-row>
+            <b-row class="mt-1">
+              <b-col cols="3" class="d-flex align-items-center">
+                接続状況
+              </b-col>
+              <b-col cols="6">
+                <div class="w-100 text-left">
+                  <b-button size="sm" variant="danger" @click="disconnectTwitch" v-if="twitch_ws.connect">
+                    <i class="fas fa-link cursor-pointer mr-2"></i>切断
+                  </b-button>
+                  <b-button size="sm" variant="primary" @click="connectTwitch" v-else>
+                    <i class="fas fa-link cursor-pointer mr-2"></i>接続
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+            <b-row class="mt-1">
+              <b-col cols="3" class="d-flex align-items-center">
+                起動時自動接続
+              </b-col>
+              <b-col cols="6">
+                <div class="w-100 text-left">
+                  <b-button size="sm" variant="primary" @click="config_edit.twitch.auto_connect = false" v-if="config_edit.twitch.auto_connect">
+                    O N
+                  </b-button>
+                  <b-button size="sm" variant="secondary" @click="config_edit.twitch.auto_connect = true" v-else>
+                    OFF
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+          </b-form>
+        </div>
+      </main>
+      <div id="loading" v-if="loading.show">
+        <b-spinner class="spinner"></b-spinner>
+        <div class="loading-text">{{loading.text}}</div>
+      </div>
+    </div>
+    <script src="./js/renderer.js"></script>
+  </body>
+</html>

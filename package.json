@@ -1,0 +1,25 @@
+{
+  "name": "CustomRewardBlendShapeSender",
+  "productName": "カスタム報酬でBlendShapeを送るやつ",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-packager . --icon=app.ico --overwrite"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^21.2.0",
+    "electron-packager": "^17.1.1"
+  },
+  "dependencies": {
+    "@twurple/api": "^5.2.5",
+    "@twurple/auth": "^5.2.5",
+    "@twurple/eventsub": "^5.2.5",
+    "electron-window-state": "^5.0.3",
+    "ip": "^1.1.8",
+    "node-osc": "^8.0.6"
+  }
+}

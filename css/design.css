@@ -1,0 +1,58 @@
+html,
+body {
+  position: relative;
+  font-size: 14px;
+  font-family: "游ゴシック体", "YuGothic", "游ゴシック", "Yu Gothic",
+    "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", "Meiryo",
+    sans-serif;
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#loading {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+#loading .spinner {
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  top: calc(((100vh - 50px) / 2) - 30px);
+  left: calc((100% - 50px) / 2);
+}
+
+#loading .loading-text {
+  position: fixed;
+  text-align: center;
+  
+  height: 20px;
+  top: calc(((100vh - 20px) / 2) + 20px);
+  left: 0;
+}
+
+#alert {
+  position: fixed;
+  width: calc(100% - 10px);
+  top: 5px;
+  left: 5px;
+  z-index: 10001;
+}
+
+main {
+  padding: 10px;
+}
+
+.blendshape-edit .form-control-sm {
+  height: 20px;
+  font-size: .8rem;
+}
