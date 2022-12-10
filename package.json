@@ -1,7 +1,7 @@
 {
   "name": "CustomRewardBlendShapeSender",
   "productName": "カスタム報酬でBlendShapeを送るやつ",
-  "version": "1.0.0",
+  "version": "0.0.1(β)",
   "description": "",
   "main": "main.js",
   "scripts": {

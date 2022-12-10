@@ -1,2 +1,4 @@
 node_modules/
 config/twitch_config.json
+カスタム報酬でBlendShapeを送るやつ-win32-x64/
+build用/
