@@ -167,11 +167,11 @@
               </b-col>
               <b-col cols="6">
                 <div class="w-100 text-left">
-                  <b-button size="sm" variant="danger" @click="disconnectTwitch" v-if="twitch_ws.connect">
-                    <i class="fas fa-link cursor-pointer mr-2"></i>切断
+                  <b-button size="sm" variant="primary" @click="disconnectTwitch" v-if="twitch_ws.connect">
+                    <i class="fas fa-link cursor-pointer mr-2"></i>接続中
                   </b-button>
-                  <b-button size="sm" variant="primary" @click="connectTwitch" v-else>
-                    <i class="fas fa-link cursor-pointer mr-2"></i>接続
+                  <b-button size="sm" variant="secondary" @click="connectTwitch" v-else>
+                    <i class="fas fa-link cursor-pointer mr-2"></i>切断済
                   </b-button>
                 </div>
               </b-col>
