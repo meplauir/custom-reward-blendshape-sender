@@ -1,6 +1,8 @@
 # Twitchのカスタム報酬でBlendShapeを送るやつ
 チャンネルポイントでのカスタム報酬引き換えをトリガーにして、指定IPアドレスにVMC/OSC ProtocolでBlendShapeを送信します。
 
+コードはスパゲッティ。
+
 ## 使用例
 - VirtualMotionCaptureで読み込み中のアバターのBlendShapeを操作
 - VSeeFaceで読み込み中のアバターのBlendShapeを操作
