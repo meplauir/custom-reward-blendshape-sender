@@ -9,7 +9,7 @@
     "build": "electron-packager . --icon=app.ico --overwrite"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^21.2.0",
     "electron-packager": "^17.1.1"
